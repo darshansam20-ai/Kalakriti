@@ -40,6 +40,7 @@ service cloud.firestore {
              data.role in ['customer', 'admin'] &&
              (!('displayName' in data) || (data.displayName is string && data.displayName.size() <= 100)) &&
              (!('wishlist' in data) || (data.wishlist is list && data.wishlist.size() <= 500)) &&
+             (!('addresses' in data) || (data.addresses is list && data.addresses.size() <= 20)) &&
              data.createdAt is timestamp;
     }
     
@@ -102,6 +103,11 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow create: if true;
       allow update, delete: if isAdmin();
+    }
+
+    match /promoCodes/{codeId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }

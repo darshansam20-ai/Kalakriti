@@ -100,7 +100,7 @@ export const Navbar: React.FC = () => {
                 </span>
               )}
             </button>
-            <div className="relative hidden sm:block">
+            <div className="relative">
               <button 
                 onClick={handleUserClick}
                 className="text-ink hover:text-maroon transition-colors p-2"

@@ -29,6 +29,7 @@ import { AdminShipments } from './pages/admin/AdminShipments';
 import { AdminFAQs } from './pages/admin/AdminFAQs';
 import { AdminSettings } from './pages/admin/AdminSettings';
 import { AdminNewsletter } from './pages/admin/AdminNewsletter';
+import { Checkout } from './pages/Checkout';
 
 // Scroll to top on route change
 const ScrollToTop = () => {
@@ -72,6 +73,7 @@ export default function App() {
                     <Route path="/product/:id" element={<ProductDetail />} />
                     <Route path="/collections" element={<Collections />} />
                     <Route path="/wishlist" element={<Wishlist />} />
+                    <Route path="/checkout" element={<Checkout />} />
                     <Route path="/orders" element={<Orders />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="/contact" element={<ContentPage type="contact" title="Contact Us" />} />

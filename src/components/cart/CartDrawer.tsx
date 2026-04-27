@@ -117,11 +117,13 @@ export const CartDrawer: React.FC = () => {
                   Shipping and taxes calculated at checkout.
                 </p>
                 <div className="space-y-3">
-                  <button
+                  <Link
+                    to="/checkout"
+                    onClick={closeCart}
                     className="w-full flex items-center justify-center rounded-[30px] border border-transparent bg-maroon px-6 py-4 text-[14px] uppercase tracking-wide font-semibold text-white shadow-md hover:bg-maroon-dark transition-colors"
                   >
                     Proceed to Checkout
-                  </button>
+                  </Link>
                   <button
                     onClick={closeCart}
                     className="w-full flex items-center justify-center rounded-[30px] border border-gold px-6 py-4 text-[14px] uppercase tracking-wide font-semibold text-ink bg-transparent hover:bg-accent-soft transition-colors"
