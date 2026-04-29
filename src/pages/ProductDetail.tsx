@@ -238,10 +238,14 @@ export const ProductDetail: React.FC = () => {
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="p-5 pt-0 text-text-light text-[14px] space-y-2">
-                        <p>Standard shipping takes 3-5 business days within India.</p>
-                        <p>International shipping takes 10-15 business days.</p>
-                        <p>We accept returns within 7 days of delivery for unworn items in their original packaging.</p>
+                      <div className="p-5 pt-0 text-text-light text-[14px] space-y-2 whitespace-pre-line">
+                        {product.shippingReturns || (
+                          <>
+                            <p>Standard shipping takes 3-5 business days within India.</p>
+                            <p>International shipping takes 10-15 business days.</p>
+                            <p>We accept returns within 7 days of delivery for unworn items in their original packaging.</p>
+                          </>
+                        )}
                       </div>
                     </motion.div>
                   )}
@@ -265,12 +269,14 @@ export const ProductDetail: React.FC = () => {
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="p-5 pt-0 text-text-light text-[14px] space-y-2">
-                        <ul className="list-disc pl-5 space-y-1">
-                          <li>Store in a cool, dry place, preferably in the provided box or a soft pouch.</li>
-                          <li>Avoid direct contact with perfumes, lotions, and water.</li>
-                          <li>Wipe with a soft, dry cloth after use to maintain the shine.</li>
-                        </ul>
+                      <div className="p-5 pt-0 text-text-light text-[14px] space-y-2 whitespace-pre-line">
+                        {product.careInstructions || (
+                          <ul className="list-disc pl-5 space-y-1">
+                            <li>Store in a cool, dry place, preferably in the provided box or a soft pouch.</li>
+                            <li>Avoid direct contact with perfumes, lotions, and water.</li>
+                            <li>Wipe with a soft, dry cloth after use to maintain the shine.</li>
+                          </ul>
+                        )}
                       </div>
                     </motion.div>
                   )}

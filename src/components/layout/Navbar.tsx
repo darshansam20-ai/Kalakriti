@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingBag, Search, User, Menu, X, Heart, LogOut, Package, MapPin } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -20,7 +20,13 @@ export const Navbar: React.FC = () => {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [storeName, setStoreName] = useState('Kalakriti');
   const navigate = useNavigate();
+  const location = useLocation();
   const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsUserDropdownOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -38,14 +44,16 @@ export const Navbar: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsUserDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
     };
   }, []);
 

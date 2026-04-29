@@ -131,6 +131,8 @@ export const Checkout: React.FC = () => {
     if (user && selectedAddressIndex !== null) {
       const orderData = {
         userId: user.uid,
+        userName: user.displayName || 'Unknown User',
+        userEmail: user.email || '',
         items,
         totalAmount: finalTotal,
         discountApplied: discount,

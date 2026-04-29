@@ -18,7 +18,7 @@ export const AdminProducts: React.FC = () => {
     price: 0,
     mrp: 0,
     category: 'Bridal Sets',
-    material: 'Metal',
+    material: '',
     color: 'Gold',
     occasion: 'Wedding',
     rating: 0,
@@ -28,6 +28,8 @@ export const AdminProducts: React.FC = () => {
     sizes: [],
     isBestseller: false,
     isNewArrival: true,
+    shippingReturns: '',
+    careInstructions: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -94,8 +96,9 @@ export const AdminProducts: React.FC = () => {
     setIsEditing(null);
     setFormData({
       title: '', description: '', price: 0, mrp: 0, category: 'Bridal Sets',
-      material: 'Metal', color: 'Gold', occasion: 'Wedding', rating: 0, reviews: 0,
+      material: '', color: 'Gold', occasion: 'Wedding', rating: 0, reviews: 0,
       inStock: true, images: [''], sizes: [], isBestseller: false, isNewArrival: true,
+      shippingReturns: '', careInstructions: '',
     });
   };
 
@@ -167,6 +170,10 @@ export const AdminProducts: React.FC = () => {
             </div>
             
             <div>
+              <label className="block text-[13px] font-medium text-text-light mb-1">Material</label>
+              <input required type="text" name="material" value={formData.material || ''} onChange={handleInputChange} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" />
+            </div>
+            <div>
               <label className="block text-[13px] font-medium text-text-light mb-1">Price (₹)</label>
               <input required type="number" name="price" value={formData.price} onChange={handleInputChange} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" />
             </div>
@@ -174,6 +181,16 @@ export const AdminProducts: React.FC = () => {
               <label className="block text-[13px] font-medium text-text-light mb-1">MRP (₹)</label>
               <input required type="number" name="mrp" value={formData.mrp} onChange={handleInputChange} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" />
             </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-[13px] font-medium text-text-light mb-1">Care Instructions</label>
+              <textarea name="careInstructions" value={formData.careInstructions || ''} onChange={handleInputChange} rows={2} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]"></textarea>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-[13px] font-medium text-text-light mb-1">Shipping & Returns</label>
+              <textarea name="shippingReturns" value={formData.shippingReturns || ''} onChange={handleInputChange} rows={2} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]"></textarea>
+            </div>
+
 
             <div className="md:col-span-2">
               <label className="block text-[13px] font-medium text-text-light mb-2">Product Images</label>

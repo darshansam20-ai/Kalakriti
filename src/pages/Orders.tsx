@@ -136,7 +136,7 @@ export const Orders: React.FC = () => {
                   </div>
                 <div>
                   <p className="text-[12px] uppercase tracking-wider text-text-light font-medium mb-1">Total</p>
-                  <p className="text-[14px] font-bold text-maroon">₹{(order as any).totalAmount?.toLocaleString('en-IN') ?? 0}</p>
+                  <p className="text-[14px] font-bold text-maroon">₹{((order as any).totalAmount || order.total || 0).toLocaleString('en-IN')}</p>
                 </div>
                   <div className="flex items-center">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-[12px] font-medium uppercase tracking-wide ${getStatusColor(order.status)}`}>
@@ -147,6 +147,31 @@ export const Orders: React.FC = () => {
                 </div>
                 
                 <div className="p-6">
+                  {/* Tracking Info */}
+                  {(order as any).carrier && (order as any).trackingNumber && (
+                    <div className="mb-6 p-4 bg-accent-soft rounded-[8px] border border-black/5 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                      <div>
+                        <p className="text-[12px] uppercase tracking-wider text-text-light font-medium mb-1">Carrier</p>
+                        <p className="text-[14px] font-bold text-ink">{(order as any).carrier}</p>
+                      </div>
+                      <div>
+                        <p className="text-[12px] uppercase tracking-wider text-text-light font-medium mb-1">Tracking Number</p>
+                        <p className="text-[14px] font-mono text-ink">{(order as any).trackingNumber}</p>
+                      </div>
+                      <div className="sm:text-right">
+                        <p className="text-[12px] uppercase tracking-wider text-text-light font-medium mb-1">Track Order</p>
+                        <a 
+                           href={`https://www.google.com/search?q=${(order as any).carrier}+tracking+${(order as any).trackingNumber}`} 
+                           target="_blank" 
+                           rel="noreferrer" 
+                           className="text-[14px] font-bold text-maroon hover:underline flex items-center"
+                        >
+                           Track Package
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="space-y-4">
                     {order.items?.map((item, i) => (
                       <div key={i} className="flex items-center gap-4">

@@ -15,6 +15,8 @@ export interface Product {
   sizes: string[];
   isBestseller: boolean;
   isNewArrival: boolean;
+  shippingReturns?: string;
+  careInstructions?: string;
 }
 
 export const categories = [
