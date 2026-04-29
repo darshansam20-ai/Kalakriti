@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Users, Star, Truck } from 'lucide-react';
 import { db } from '../../firebase';
-import { doc, getDoc, collection, query, getDocs, orderBy, limit } from 'firebase/firestore';
+import { doc, getDoc, collection, query, getDocs, orderBy, limit, getCountFromServer, where } from 'firebase/firestore';
 
 export const AdminDashboard: React.FC = () => {
   const [storeName, setStoreName] = useState('Kalakriti');
 
   const [orders, setOrders] = useState<any[]>([]);
   const [usersCount, setUsersCount] = useState(0);
+  const [ordersCount, setOrdersCount] = useState(0);
+  const [activeShipmentsCount, setActiveShipmentsCount] = useState(0);
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,8 +27,21 @@ export const AdminDashboard: React.FC = () => {
         const fetchedOrders = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setOrders(fetchedOrders);
         
-        const usersSnapshot = await getDocs(collection(db, 'users'));
-        setUsersCount(usersSnapshot.size);
+        // Use getCountFromServer for aggregate stats
+        try {
+          const totalOrdersSnap = await getCountFromServer(collection(db, 'orders'));
+          setOrdersCount(totalOrdersSnap.data().count);
+          
+          const usersSnap = await getCountFromServer(collection(db, 'users'));
+          setUsersCount(usersSnap.data().count);
+          
+          // Count generic active shipments by querying
+          const shippedQuery = query(collection(db, 'orders'), where('status', 'in', ['processing', 'shipped']));
+          const shippedSnap = await getCountFromServer(shippedQuery);
+          setActiveShipmentsCount(shippedSnap.data().count);
+        } catch(err) {
+          console.warn("Aggregate counts failed or missing index, using fallbacks");
+        }
         
         const reviewsQuery = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'), limit(5));
         const reviewsSnapshot = await getDocs(reviewsQuery);
@@ -41,10 +56,10 @@ export const AdminDashboard: React.FC = () => {
   }, []);
 
   const stats = [
-    { label: 'Total Orders', value: orders.length.toString(), icon: <Package size={24} className="text-maroon" />, trend: '' },
+    { label: 'Total Orders', value: (ordersCount || orders.length).toString(), icon: <Package size={24} className="text-maroon" />, trend: '' },
     { label: 'Total Users', value: usersCount.toString(), icon: <Users size={24} className="text-blue-600" />, trend: '' },
     { label: 'Pending Reviews', value: reviews.length.toString(), icon: <Star size={24} className="text-gold" />, trend: '' },
-    { label: 'Active Shipments', value: orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length.toString(), icon: <Truck size={24} className="text-purple-600" />, trend: '' },
+    { label: 'Active Shipments', value: (activeShipmentsCount || orders.filter(o => o.status === 'processing' || o.status === 'shipped').length).toString(), icon: <Truck size={24} className="text-purple-600" />, trend: '' },
   ];
 
   return (

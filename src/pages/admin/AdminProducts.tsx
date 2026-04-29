@@ -204,13 +204,23 @@ export const AdminProducts: React.FC = () => {
                          placeholder="https://example.com/image.jpg" 
                          id="imageUrlInput"
                          className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" 
+                         onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                               e.preventDefault();
+                               const input = e.currentTarget;
+                               if (input.value) {
+                                  setFormData(prev => ({ ...prev, images: [...(prev.images || []).filter(u => u !== ''), input.value] }));
+                                  input.value = '';
+                               }
+                            }
+                         }}
                       />
                       <button 
                          type="button"
                          onClick={() => {
                             const input = document.getElementById('imageUrlInput') as HTMLInputElement;
                             if (input && input.value) {
-                               setFormData(prev => ({ ...prev, images: [...prev.images.filter(u => u !== ''), input.value] }));
+                               setFormData(prev => ({ ...prev, images: [...(prev.images || []).filter(u => u !== ''), input.value] }));
                                input.value = '';
                             }
                          }}
