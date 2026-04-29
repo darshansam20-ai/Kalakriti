@@ -20,6 +20,7 @@ export const Navbar: React.FC = () => {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [storeName, setStoreName] = useState('Kalakriti');
   const navigate = useNavigate();
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -34,6 +35,18 @@ export const Navbar: React.FC = () => {
       }
     };
     fetchSettings();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handleUserClick = () => {
@@ -100,7 +113,7 @@ export const Navbar: React.FC = () => {
                 </span>
               )}
             </button>
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={handleUserClick}
                 className="text-ink hover:text-maroon transition-colors p-2"

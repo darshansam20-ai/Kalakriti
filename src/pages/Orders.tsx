@@ -134,10 +134,10 @@ export const Orders: React.FC = () => {
                       {order.createdAt?.toDate ? order.createdAt.toDate().toLocaleDateString() : 'Just now'}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-[12px] uppercase tracking-wider text-text-light font-medium mb-1">Total</p>
-                    <p className="text-[14px] font-bold text-maroon">₹{order.total.toLocaleString('en-IN')}</p>
-                  </div>
+                <div>
+                  <p className="text-[12px] uppercase tracking-wider text-text-light font-medium mb-1">Total</p>
+                  <p className="text-[14px] font-bold text-maroon">₹{(order as any).totalAmount?.toLocaleString('en-IN') ?? 0}</p>
+                </div>
                   <div className="flex items-center">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-[12px] font-medium uppercase tracking-wide ${getStatusColor(order.status)}`}>
                       <span className="mr-2">{getStatusIcon(order.status)}</span>
@@ -148,7 +148,7 @@ export const Orders: React.FC = () => {
                 
                 <div className="p-6">
                   <div className="space-y-4">
-                    {order.items.map((item, i) => (
+                    {order.items?.map((item, i) => (
                       <div key={i} className="flex items-center gap-4">
                         <img src={item.image} alt={item.title} className="w-16 h-16 object-cover rounded-[8px] bg-[#f9f9f9] mix-blend-multiply border border-black/5" />
                         <div className="flex-grow">
@@ -156,7 +156,7 @@ export const Orders: React.FC = () => {
                           <p className="text-[13px] text-text-light">Size: {item.size} | Qty: {item.quantity}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-[14px] font-bold text-ink">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
+                          <p className="text-[14px] font-bold text-ink">₹{((item.price || 0) * (item.quantity || 1)).toLocaleString('en-IN')}</p>
                         </div>
                       </div>
                     ))}
