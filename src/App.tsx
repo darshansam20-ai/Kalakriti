@@ -17,6 +17,7 @@ import { ProductDetail } from './pages/ProductDetail';
 import { Collections } from './pages/Collections';
 import { Wishlist } from './pages/Wishlist';
 import { Orders } from './pages/Orders';
+import { Addresses } from './pages/Addresses';
 import { FAQ } from './pages/FAQ';
 import { ContentPage } from './pages/ContentPage';
 import { AdminLayout } from './components/admin/AdminLayout';
@@ -75,6 +76,7 @@ export default function App() {
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/orders" element={<Orders />} />
+                    <Route path="/addresses" element={<Addresses />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="/contact" element={<ContentPage type="contact" title="Contact Us" />} />
                     <Route path="/shipping-policy" element={<ContentPage type="shipping" title="Shipping Policy" />} />

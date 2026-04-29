@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Search, User, Menu, X, Heart, LogOut, Package } from 'lucide-react';
+import { ShoppingBag, Search, User, Menu, X, Heart, LogOut, Package, MapPin } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
@@ -138,6 +138,13 @@ export const Navbar: React.FC = () => {
                       className="flex items-center px-4 py-2 text-[13px] text-ink hover:bg-accent-soft hover:text-maroon transition-colors"
                     >
                       <Package size={16} className="mr-2" /> Orders
+                    </Link>
+                    <Link 
+                      to="/addresses" 
+                      onClick={() => setIsUserDropdownOpen(false)}
+                      className="flex items-center px-4 py-2 text-[13px] text-ink hover:bg-accent-soft hover:text-maroon transition-colors"
+                    >
+                      <MapPin size={16} className="mr-2" /> Addresses
                     </Link>
                     {user.email && ADMIN_EMAILS.includes(user.email) && (
                       <Link 

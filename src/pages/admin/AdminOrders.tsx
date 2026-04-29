@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../../firebase';
 import { collection, query, getDocs, orderBy, updateDoc, doc } from 'firebase/firestore';
-import { Package, Clock, CheckCircle, Truck, XCircle, Search } from 'lucide-react';
+import { Package, Clock, CheckCircle, Truck, XCircle, Search, MapPin } from 'lucide-react';
 
 export const AdminOrders: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -74,7 +74,7 @@ export const AdminOrders: React.FC = () => {
             <tr className="bg-accent-soft border-b border-black/5 text-[12px] uppercase tracking-wider text-text-light">
               <th className="p-4 font-medium">Order ID</th>
               <th className="p-4 font-medium">Date</th>
-              <th className="p-4 font-medium">Customer ID</th>
+              <th className="p-4 font-medium">Shipping</th>
               <th className="p-4 font-medium">Total</th>
               <th className="p-4 font-medium">Status</th>
               <th className="p-4 font-medium">Action</th>
@@ -83,11 +83,39 @@ export const AdminOrders: React.FC = () => {
           <tbody>
             {filteredOrders.map((order) => (
               <tr key={order.id} className="border-b border-black/5 hover:bg-bg/50 transition-colors">
-                <td className="p-4 text-[14px] font-mono text-ink">{order.id}</td>
+                <td className="p-4 text-[14px] font-mono text-ink">
+                  {order.id}
+                  <div className="text-[11px] text-text-light mt-1">User: {order.userId}</div>
+                </td>
                 <td className="p-4 text-[14px] text-text-light">
                   {order.createdAt?.toDate ? order.createdAt.toDate().toLocaleDateString() : 'N/A'}
                 </td>
-                <td className="p-4 text-[13px] text-text-light truncate max-w-[150px]">{order.userId}</td>
+                <td className="p-4 text-[13px] text-text-light max-w-[200px]">
+                  {order.shippingAddress ? (
+                    <div className="flex flex-col gap-1">
+                      <span className="line-clamp-2" title={order.shippingAddress.description}>{order.shippingAddress.description}</span>
+                      {order.shippingAddress.lat && order.shippingAddress.lng ? (
+                        <a 
+                          href={`https://www.google.com/maps/search/?api=1&query=${order.shippingAddress.lat},${order.shippingAddress.lng}`} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="flex items-center text-maroon hover:underline text-[12px] mt-1"
+                        >
+                          <MapPin size={12} className="mr-1" /> View on Map
+                        </a>
+                      ) : (
+                        <a 
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.shippingAddress.description)}`} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="flex items-center text-maroon hover:underline text-[12px] mt-1"
+                        >
+                          <MapPin size={12} className="mr-1" /> Search on Map
+                        </a>
+                      )}
+                    </div>
+                  ) : 'N/A'}
+                </td>
                 <td className="p-4 text-[14px] font-bold text-maroon">₹{order.total?.toLocaleString('en-IN') || 0}</td>
                 <td className="p-4">
                   <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${getStatusColor(order.status)}`}>

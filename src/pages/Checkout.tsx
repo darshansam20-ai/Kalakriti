@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 import { doc, getDoc, collection, addDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
+import { AddressForm, Address } from '../components/AddressForm';
 
 export const Checkout: React.FC = () => {
   const { items, cartTotal, closeCart } = useCart();
@@ -167,7 +168,7 @@ export const Checkout: React.FC = () => {
 
       // 2. Open Razorpay Checkout
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || '', // We assume VITE_RAZORPAY_KEY_ID will be set
+        key: (import.meta as any).env.VITE_RAZORPAY_KEY_ID || '', // We assume VITE_RAZORPAY_KEY_ID will be set
         amount: order.amount,
         currency: order.currency,
         name: 'Our Store',
@@ -238,30 +239,25 @@ export const Checkout: React.FC = () => {
 
             {isAddingAddress ? (
               <div className="space-y-4">
-                <label className="block text-[14px] font-bold text-ink">Search via Google Maps</label>
-                <input
-                  value={addressSearchValue}
-                  onChange={(e) => setAddressSearchValue(e.target.value)}
-                  disabled={!ready}
-                  placeholder="Start typing your address..."
-                  className="w-full border border-black/10 rounded-[8px] px-4 py-3 text-[14px]"
+                <AddressForm
+                  onSave={async (newAddress) => {
+                    try {
+                      if (user) {
+                        const userRef = doc(db, 'users', user.uid);
+                        await updateDoc(userRef, {
+                          addresses: arrayUnion(newAddress)
+                        });
+                      }
+                      const updatedAddresses = [...addresses, newAddress];
+                      setAddresses(updatedAddresses);
+                      setSelectedAddressIndex(updatedAddresses.length - 1);
+                      setIsAddingAddress(false);
+                    } catch (err) {
+                      console.error("Error saving address:", err);
+                    }
+                  }}
+                  onCancel={() => setIsAddingAddress(false)}
                 />
-                {status === "OK" && (
-                  <ul className="border border-black/10 rounded-[8px] mt-2 bg-white max-h-48 overflow-y-auto">
-                    {addressSuggestions.map(({ place_id, description }) => (
-                      <li
-                        key={place_id}
-                        onClick={() => handleSelectAddressSuggestion(description)}
-                        className="p-3 hover:bg-accent-soft cursor-pointer text-[14px]"
-                      >
-                        {description}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <div className="flex justify-end mt-4">
-                  <button onClick={() => setIsAddingAddress(false)} className="text-text-light text-[14px] hover:text-ink">Cancel</button>
-                </div>
               </div>
             ) : (
               <div className="space-y-4">
