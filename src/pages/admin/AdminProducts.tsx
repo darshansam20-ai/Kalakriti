@@ -69,7 +69,7 @@ export const AdminProducts: React.FC = () => {
       }));
     } catch (error) {
       console.error("Error uploading images:", error);
-      alert("Failed to upload images. Please try again.");
+      alert(`Failed to upload images: ${(error as any).message || error}. This is usually because Firebase Storage is not initialized or the Storage Security Rules are denying access. Please go to the Firebase Console, click "Storage" -> "Get Started", and set the rules to allow read/write or 'if true' temporarily for testing.`);
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -195,6 +195,33 @@ export const AdminProducts: React.FC = () => {
             <div className="md:col-span-2">
               <label className="block text-[13px] font-medium text-text-light mb-2">Product Images</label>
               
+              <div className="flex flex-col md:flex-row gap-4 mb-4 items-start md:items-end">
+                <div className="flex-grow w-full md:w-auto">
+                   <label className="block text-[11px] font-medium text-text-light mb-1">Add Image via URL (Fallback)</label>
+                   <div className="flex gap-2">
+                      <input 
+                         type="url" 
+                         placeholder="https://example.com/image.jpg" 
+                         id="imageUrlInput"
+                         className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" 
+                      />
+                      <button 
+                         type="button"
+                         onClick={() => {
+                            const input = document.getElementById('imageUrlInput') as HTMLInputElement;
+                            if (input && input.value) {
+                               setFormData(prev => ({ ...prev, images: [...prev.images.filter(u => u !== ''), input.value] }));
+                               input.value = '';
+                            }
+                         }}
+                         className="px-4 py-2 bg-black/5 text-ink text-[13px] font-medium rounded-[8px] hover:bg-black/10 transition-colors whitespace-nowrap"
+                      >
+                         Add URL
+                      </button>
+                   </div>
+                </div>
+              </div>
+
               <div className="flex flex-wrap gap-4 mb-4">
                 {formData.images.filter(url => url !== '').map((url, index) => (
                   <div key={index} className="relative w-24 h-24 border border-black/10 rounded-[8px] overflow-hidden group">
