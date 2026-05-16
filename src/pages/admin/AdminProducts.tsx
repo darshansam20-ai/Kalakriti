@@ -74,8 +74,13 @@ export const AdminProducts: React.FC = () => {
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext('2d');
-          if (ctx) ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', 0.7));
+          if (ctx) {
+            // Fill background with white first for transparent images
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+          }
+          resolve(canvas.toDataURL('image/jpeg', 0.8));
         };
         img.onerror = (error) => reject(error);
       };
@@ -96,17 +101,12 @@ export const AdminProducts: React.FC = () => {
         const file = files[i];
         
         try {
-          // Attempt Firebase Storage Upload first
-          const fileName = `products/${Date.now()}_${file.name}`;
-          const storageRef = ref(storage, fileName);
-          await uploadBytes(storageRef, file);
-          const downloadUrl = await getDownloadURL(storageRef);
-          uploadedUrls.push(downloadUrl);
-        } catch (uploadError) {
-          console.warn("Storage upload failed, falling back to Base64 compression", uploadError);
-          // Fallback to storing as compressed base64 if Firebase Storage fails
+          // Immediately process as Base64 to avoid Firebase Storage configuration issues
           const base64Url = await compressImageToBase64(file);
           uploadedUrls.push(base64Url);
+        } catch (uploadError) {
+          console.error("Base64 compression failed:", uploadError);
+          throw new Error("Failed to process image locally.");
         }
       }
 
@@ -312,7 +312,7 @@ export const AdminProducts: React.FC = () => {
                   ref={fileInputRef} 
                   onChange={handleImageUpload} 
                   multiple 
-                  accept="image/*" 
+                  accept="image/jpeg, image/png, image/webp" 
                   className="hidden" 
                 />
               </div>
@@ -338,7 +338,7 @@ export const AdminProducts: React.FC = () => {
 
             <div className="md:col-span-2 flex justify-end space-x-3 mt-4">
               <button type="button" onClick={resetForm} className="px-6 py-2 text-[13px] font-medium text-text-light hover:text-ink transition-colors">Cancel</button>
-              <button type="submit" className="px-6 py-2 bg-maroon text-white text-[13px] font-semibold tracking-wide rounded-[8px] hover:bg-maroon-dark transition-colors">
+              <button disabled={uploading} type="submit" className="px-6 py-2 bg-maroon text-white text-[13px] font-semibold tracking-wide rounded-[8px] hover:bg-maroon-dark transition-colors disabled:opacity-50">
                 {isEditing ? 'Save Changes' : 'Add Product'}
               </button>
             </div>
