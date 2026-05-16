@@ -1,13 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { categories } from '../data/products';
+import { useCollections } from '../context/CollectionContext';
 import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { Filter, ChevronDown, Star, ShoppingBag, Heart } from 'lucide-react';
 
 export const Shop: React.FC = () => {
+  const { categories } = useCollections();
   const { products } = useProducts();
   const [searchParams, setSearchParams] = useSearchParams();
   const { addToCart } = useCart();

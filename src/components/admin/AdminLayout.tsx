@@ -11,7 +11,8 @@ import {
   HelpCircle,
   LogOut,
   Settings,
-  Mail
+  Mail,
+  Layers
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase';
@@ -56,6 +57,7 @@ export const AdminLayout: React.FC = () => {
     { path: '/admin', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
     { path: '/admin/orders', icon: <Package size={20} />, label: 'Orders' },
     { path: '/admin/products', icon: <Package size={20} />, label: 'Products' },
+    { path: '/admin/collections', icon: <Layers size={20} />, label: 'Collections' },
     { path: '/admin/users', icon: <Users size={20} />, label: 'Users' },
     { path: '/admin/reviews', icon: <Star size={20} />, label: 'Ratings & Reviews' },
     { path: '/admin/shipments', icon: <Truck size={20} />, label: 'Shipments' },

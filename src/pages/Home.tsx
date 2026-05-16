@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { categories } from '../data/products';
+import { useCollections } from '../context/CollectionContext';
 import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -10,6 +10,7 @@ import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
 export const Home: React.FC = () => {
+  const { categories } = useCollections();
   const { products } = useProducts();
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useAuth();

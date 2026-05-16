@@ -1,9 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { categories } from '../data/products';
+import { useCollections } from '../context/CollectionContext';
 
 export const Collections: React.FC = () => {
+  const { categories, loading } = useCollections();
+
+  if (loading) {
+    return (
+      <div className="bg-bg min-h-screen pt-12 pb-24 flex justify-center items-center">
+        <div className="w-8 h-8 border-4 border-maroon border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-bg min-h-screen pt-12 pb-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">

@@ -1,16 +1,19 @@
 import React, { useState, useRef } from 'react';
 import { useProducts } from '../../context/ProductContext';
+import { useCollections } from '../../context/CollectionContext';
 import { Product } from '../../data/products';
 import { Plus, Edit2, Trash2, X, Check, Upload, Image as ImageIcon } from 'lucide-react';
 import { storage } from '../../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export const AdminProducts: React.FC = () => {
+  const { categories } = useCollections();
   const { products, loading, addProduct, removeProduct, updateProduct } = useProducts();
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
   
   const [imageUrl, setImageUrl] = useState('');
   
@@ -164,11 +167,18 @@ export const AdminProducts: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    setProductToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (productToDelete) {
       try {
-        await removeProduct(id);
+        await removeProduct(productToDelete);
+        setProductToDelete(null);
       } catch (error) {
-        alert("Failed to delete product.");
+        setProductToDelete(null);
+        // Using a non-blocking UI alert would be better but console error for now
+        console.error("Failed to delete product.", error);
       }
     }
   };
@@ -192,6 +202,29 @@ export const AdminProducts: React.FC = () => {
         )}
       </div>
 
+      {productToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-[16px] p-6 max-w-sm w-full shadow-2xl">
+            <h3 className="text-lg font-bold font-serif mb-2 text-ink">Delete Product</h3>
+            <p className="text-text-light text-sm mb-6">Are you sure you want to delete this product? This action cannot be undone.</p>
+            <div className="flex justify-end gap-3">
+              <button 
+                onClick={() => setProductToDelete(null)}
+                className="px-4 py-2 text-sm font-medium text-text-light hover:text-ink transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDelete}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-[8px] hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isAdding && (
         <div className="bg-surface p-6 rounded-[16px] border border-black/5 shadow-[0_4px_12px_rgba(0,0,0,0.02)] mb-8">
           <div className="flex justify-between items-center mb-6">
@@ -208,7 +241,12 @@ export const AdminProducts: React.FC = () => {
             </div>
             <div>
               <label className="block text-[13px] font-medium text-text-light mb-1">Category</label>
-              <input required type="text" name="category" value={formData.category} onChange={handleInputChange} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" />
+              <select required name="category" value={formData.category} onChange={handleInputChange as any} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px] bg-white">
+                <option value="" disabled>Select a category</option>
+                {categories.map(c => (
+                  <option key={c.id} value={c.name}>{c.name}</option>
+                ))}
+              </select>
             </div>
             
             <div className="md:col-span-2">
