@@ -12,6 +12,8 @@ export const AdminProducts: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
+  const [imageUrl, setImageUrl] = useState('');
+  
   const [formData, setFormData] = useState<Omit<Product, 'id'>>({
     title: '',
     description: '',
@@ -43,6 +45,44 @@ export const AdminProducts: React.FC = () => {
     }
   };
 
+  const compressImageToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new window.Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.7));
+        };
+        img.onerror = (error) => reject(error);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -54,13 +94,20 @@ export const AdminProducts: React.FC = () => {
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        // Create a unique file name
-        const fileName = `products/${Date.now()}_${file.name}`;
-        const storageRef = ref(storage, fileName);
         
-        await uploadBytes(storageRef, file);
-        const downloadUrl = await getDownloadURL(storageRef);
-        uploadedUrls.push(downloadUrl);
+        try {
+          // Attempt Firebase Storage Upload first
+          const fileName = `products/${Date.now()}_${file.name}`;
+          const storageRef = ref(storage, fileName);
+          await uploadBytes(storageRef, file);
+          const downloadUrl = await getDownloadURL(storageRef);
+          uploadedUrls.push(downloadUrl);
+        } catch (uploadError) {
+          console.warn("Storage upload failed, falling back to Base64 compression", uploadError);
+          // Fallback to storing as compressed base64 if Firebase Storage fails
+          const base64Url = await compressImageToBase64(file);
+          uploadedUrls.push(base64Url);
+        }
       }
 
       setFormData(prev => ({ 
@@ -69,7 +116,7 @@ export const AdminProducts: React.FC = () => {
       }));
     } catch (error) {
       console.error("Error uploading images:", error);
-      alert(`Failed to upload images: ${(error as any).message || error}. This is usually because Firebase Storage is not initialized or the Storage Security Rules are denying access. Please go to the Firebase Console, click "Storage" -> "Get Started", and set the rules to allow read/write or 'if true' temporarily for testing.`);
+      alert(`Failed to process images: ${(error as any).message || error}.`);
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
@@ -198,19 +245,19 @@ export const AdminProducts: React.FC = () => {
               <div className="flex flex-col md:flex-row gap-4 mb-4 items-start md:items-end">
                 <div className="flex-grow w-full md:w-auto">
                    <label className="block text-[11px] font-medium text-text-light mb-1">Add Image via URL (Fallback)</label>
-                   <div className="flex gap-2">
+                     <div className="flex gap-2">
                       <input 
                          type="url" 
+                         value={imageUrl}
+                         onChange={(e) => setImageUrl(e.target.value)}
                          placeholder="https://example.com/image.jpg" 
-                         id="imageUrlInput"
                          className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" 
                          onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                                e.preventDefault();
-                               const input = e.currentTarget;
-                               if (input.value) {
-                                  setFormData(prev => ({ ...prev, images: [...(prev.images || []).filter(u => u !== ''), input.value] }));
-                                  input.value = '';
+                               if (imageUrl) {
+                                  setFormData(prev => ({ ...prev, images: [...(prev.images || []).filter(u => u !== ''), imageUrl] }));
+                                  setImageUrl('');
                                }
                             }
                          }}
@@ -218,10 +265,9 @@ export const AdminProducts: React.FC = () => {
                       <button 
                          type="button"
                          onClick={() => {
-                            const input = document.getElementById('imageUrlInput') as HTMLInputElement;
-                            if (input && input.value) {
-                               setFormData(prev => ({ ...prev, images: [...(prev.images || []).filter(u => u !== ''), input.value] }));
-                               input.value = '';
+                            if (imageUrl) {
+                               setFormData(prev => ({ ...prev, images: [...(prev.images || []).filter(u => u !== ''), imageUrl] }));
+                               setImageUrl('');
                             }
                          }}
                          className="px-4 py-2 bg-black/5 text-ink text-[13px] font-medium rounded-[8px] hover:bg-black/10 transition-colors whitespace-nowrap"
