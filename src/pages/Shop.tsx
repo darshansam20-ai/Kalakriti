@@ -5,11 +5,13 @@ import { useCollections } from '../context/CollectionContext';
 import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useFilterSettings } from '../context/FilterSettingsContext';
 import { Filter, ChevronDown, Star, ShoppingBag, Heart } from 'lucide-react';
 
 export const Shop: React.FC = () => {
   const { categories } = useCollections();
   const { products } = useProducts();
+  const { settings: filterSettings } = useFilterSettings();
   const [searchParams, setSearchParams] = useSearchParams();
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useAuth();
@@ -22,6 +24,26 @@ export const Shop: React.FC = () => {
   const activeColor = searchParams.get('color');
   const activeOccasion = searchParams.get('occasion');
   const searchQuery = searchParams.get('q');
+
+  const materialConfig = filterSettings.filterGroups.find(g => g.id === 'material');
+  const availableMaterials = useMemo(() => {
+    if (materialConfig?.options && materialConfig.options.length > 0) return materialConfig.options;
+    return Array.from(new Set(products.map(p => p.material).filter(Boolean)));
+  }, [products, materialConfig]);
+
+  const colorConfig = filterSettings.filterGroups.find(g => g.id === 'color');
+  const availableColors = useMemo(() => {
+    if (colorConfig?.options && colorConfig.options.length > 0) return colorConfig.options;
+    return Array.from(new Set(products.map(p => p.color).filter(Boolean)));
+  }, [products, colorConfig]);
+
+  const occasionConfig = filterSettings.filterGroups.find(g => g.id === 'occasion');
+  const availableOccasions = useMemo(() => {
+    if (occasionConfig?.options && occasionConfig.options.length > 0) return occasionConfig.options;
+    return Array.from(new Set(products.map(p => p.occasion).filter(Boolean)));
+  }, [products, occasionConfig]);
+
+  const enabledSortOptions = useMemo(() => filterSettings.sortOptions.filter(o => o.enabled), [filterSettings]);
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
@@ -65,14 +87,21 @@ export const Shop: React.FC = () => {
       case 'newest':
         result.sort((a, b) => (a.isNewArrival === b.isNewArrival ? 0 : a.isNewArrival ? -1 : 1));
         break;
+      case 'name-asc':
+        result.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case 'name-desc':
+        result.sort((a, b) => b.title.localeCompare(a.title));
+        break;
       case 'popular':
+      case 'bestselling':
       default:
         result.sort((a, b) => b.rating - a.rating);
         break;
     }
 
     return result;
-  }, [activeCategory, activeMaterial, sortBy]);
+  }, [activeCategory, activeMaterial, activeColor, activeOccasion, sortBy, products]);
 
   const updateFilter = (key: string, value: string | null) => {
     const newParams = new URLSearchParams(searchParams);
@@ -121,10 +150,10 @@ export const Shop: React.FC = () => {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="appearance-none bg-transparent border border-gold/20 text-ink font-medium px-4 py-2 pr-10 rounded-full focus:outline-none focus:border-gold text-[13px] uppercase tracking-wide"
               >
-                <option value="popular">Popularity</option>
-                <option value="newest">Newest Arrivals</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
+                {enabledSortOptions.map(opt => (
+                  <option key={opt.id} value={opt.id}>{opt.label}</option>
+                ))}
+                {enabledSortOptions.length === 0 && <option value="popular">Popularity</option>}
               </select>
               <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink pointer-events-none" />
             </div>
@@ -160,10 +189,11 @@ export const Shop: React.FC = () => {
               </div>
 
               {/* Material Filter */}
+              {materialConfig?.enabled !== false && availableMaterials.length > 0 && (
               <div>
-                <h3 className="font-serif text-[18px] font-semibold text-ink mb-4 border-b border-gold/20 pb-2">Material</h3>
+                <h3 className="font-serif text-[18px] font-semibold text-ink mb-4 border-b border-gold/20 pb-2">{materialConfig?.label || 'Material'}</h3>
                 <ul className="space-y-3">
-                  {['Metal', 'Silk', 'Glass'].map(mat => (
+                  {availableMaterials.map(mat => (
                     <li key={mat}>
                       <button 
                         onClick={() => updateFilter('material', activeMaterial === mat ? null : mat)}
@@ -178,46 +208,51 @@ export const Shop: React.FC = () => {
                   ))}
                 </ul>
               </div>
+              )}
 
               {/* Color Filter */}
+              {colorConfig?.enabled !== false && availableColors.length > 0 && (
               <div>
-                <h3 className="font-serif text-[18px] font-semibold text-ink mb-4 border-b border-gold/20 pb-2">Color</h3>
+                <h3 className="font-serif text-[18px] font-semibold text-ink mb-4 border-b border-gold/20 pb-2">{colorConfig?.label || 'Color'}</h3>
                 <ul className="space-y-3">
-                  {['Gold', 'Silver', 'Maroon', 'Red', 'Pastel'].map(color => (
+                  {availableColors.map(color => (
                     <li key={color}>
                       <button 
-                        onClick={() => updateFilter('color', searchParams.get('color') === color ? null : color)}
+                        onClick={() => updateFilter('color', activeColor === color ? null : color)}
                         className={`text-[13px] uppercase tracking-wide flex items-center space-x-2`}
                       >
-                        <div className={`w-4 h-4 border rounded-sm flex items-center justify-center ${searchParams.get('color') === color ? 'bg-maroon border-maroon' : 'border-gold/30'}`}>
-                          {searchParams.get('color') === color && <div className="w-2 h-2 bg-surface rounded-sm" />}
+                        <div className={`w-4 h-4 border rounded-sm flex items-center justify-center ${activeColor === color ? 'bg-maroon border-maroon' : 'border-gold/30'}`}>
+                          {activeColor === color && <div className="w-2 h-2 bg-surface rounded-sm" />}
                         </div>
-                        <span className={searchParams.get('color') === color ? 'text-maroon font-bold' : 'text-text-light'}>{color}</span>
+                        <span className={activeColor === color ? 'text-maroon font-bold' : 'text-text-light'}>{color}</span>
                       </button>
                     </li>
                   ))}
                 </ul>
               </div>
+              )}
 
               {/* Occasion Filter */}
+              {occasionConfig?.enabled !== false && availableOccasions.length > 0 && (
               <div>
-                <h3 className="font-serif text-[18px] font-semibold text-ink mb-4 border-b border-gold/20 pb-2">Occasion</h3>
+                <h3 className="font-serif text-[18px] font-semibold text-ink mb-4 border-b border-gold/20 pb-2">{occasionConfig?.label || 'Occasion'}</h3>
                 <ul className="space-y-3">
-                  {['Wedding', 'Festive', 'Casual', 'Party'].map(occ => (
+                  {availableOccasions.map(occ => (
                     <li key={occ}>
                       <button 
-                        onClick={() => updateFilter('occasion', searchParams.get('occasion') === occ ? null : occ)}
+                        onClick={() => updateFilter('occasion', activeOccasion === occ ? null : occ)}
                         className={`text-[13px] uppercase tracking-wide flex items-center space-x-2`}
                       >
-                        <div className={`w-4 h-4 border rounded-sm flex items-center justify-center ${searchParams.get('occasion') === occ ? 'bg-maroon border-maroon' : 'border-gold/30'}`}>
-                          {searchParams.get('occasion') === occ && <div className="w-2 h-2 bg-surface rounded-sm" />}
+                        <div className={`w-4 h-4 border rounded-sm flex items-center justify-center ${activeOccasion === occ ? 'bg-maroon border-maroon' : 'border-gold/30'}`}>
+                          {activeOccasion === occ && <div className="w-2 h-2 bg-surface rounded-sm" />}
                         </div>
-                        <span className={searchParams.get('occasion') === occ ? 'text-maroon font-bold' : 'text-text-light'}>{occ}</span>
+                        <span className={activeOccasion === occ ? 'text-maroon font-bold' : 'text-text-light'}>{occ}</span>
                       </button>
                     </li>
                   ))}
                 </ul>
               </div>
+              )}
 
             </div>
           </div>
@@ -235,10 +270,10 @@ export const Shop: React.FC = () => {
                     onChange={(e) => setSortBy(e.target.value)}
                     className="appearance-none bg-transparent border-b border-gold/20 text-ink font-medium py-1 pr-6 focus:outline-none focus:border-maroon cursor-pointer text-[13px] uppercase tracking-wide"
                   >
-                    <option value="popular">Popularity</option>
-                    <option value="newest">Newest Arrivals</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
+                    {enabledSortOptions.map(opt => (
+                      <option key={opt.id} value={opt.id}>{opt.label}</option>
+                    ))}
+                    {enabledSortOptions.length === 0 && <option value="popular">Popularity</option>}
                   </select>
                   <ChevronDown size={16} className="absolute right-0 top-1/2 -translate-y-1/2 text-ink pointer-events-none" />
                 </div>

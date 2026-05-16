@@ -12,7 +12,8 @@ import {
   LogOut,
   Settings,
   Mail,
-  Layers
+  Layers,
+  Filter
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { db } from '../../firebase';
@@ -63,6 +64,7 @@ export const AdminLayout: React.FC = () => {
     { path: '/admin/shipments', icon: <Truck size={20} />, label: 'Shipments' },
     { path: '/admin/faqs', icon: <HelpCircle size={20} />, label: 'FAQs' },
     { path: '/admin/settings', icon: <Settings size={20} />, label: 'Store Content' },
+    { path: '/admin/filters', icon: <Filter size={20} />, label: 'Filters & Sorting' },
     { path: '/admin/newsletter', icon: <Mail size={20} />, label: 'Newsletter' },
   ];
 

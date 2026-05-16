@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useProducts } from '../../context/ProductContext';
 import { useCollections } from '../../context/CollectionContext';
+import { useFilterSettings } from '../../context/FilterSettingsContext';
 import { Product } from '../../data/products';
 import { Plus, Edit2, Trash2, X, Check, Upload, Image as ImageIcon } from 'lucide-react';
 import { storage } from '../../firebase';
@@ -9,6 +10,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 export const AdminProducts: React.FC = () => {
   const { categories } = useCollections();
   const { products, loading, addProduct, removeProduct, updateProduct } = useProducts();
+  const { settings } = useFilterSettings();
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -256,7 +258,57 @@ export const AdminProducts: React.FC = () => {
             
             <div>
               <label className="block text-[13px] font-medium text-text-light mb-1">Material</label>
-              <input required type="text" name="material" value={formData.material || ''} onChange={handleInputChange} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" />
+              {settings.filterGroups.find(g => g.id === 'material')?.options.length ? (
+                <select 
+                  name="material" 
+                  value={formData.material || ''} 
+                  onChange={(e: any) => handleInputChange(e)} 
+                  className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]"
+                >
+                  <option value="">Select Material</option>
+                  {settings.filterGroups.find(g => g.id === 'material')!.options.map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              ) : (
+                <input required type="text" name="material" value={formData.material || ''} onChange={handleInputChange} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" />
+              )}
+            </div>
+            <div>
+              <label className="block text-[13px] font-medium text-text-light mb-1">Color</label>
+              {settings.filterGroups.find(g => g.id === 'color')?.options.length ? (
+                <select 
+                  name="color" 
+                  value={formData.color || ''} 
+                  onChange={(e: any) => handleInputChange(e)} 
+                  className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]"
+                >
+                  <option value="">Select Color</option>
+                  {settings.filterGroups.find(g => g.id === 'color')!.options.map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              ) : (
+                <input required type="text" name="color" value={formData.color || ''} onChange={handleInputChange} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" />
+              )}
+            </div>
+            <div>
+              <label className="block text-[13px] font-medium text-text-light mb-1">Occasion</label>
+              {settings.filterGroups.find(g => g.id === 'occasion')?.options.length ? (
+                <select 
+                  name="occasion" 
+                  value={formData.occasion || ''} 
+                  onChange={(e: any) => handleInputChange(e)} 
+                  className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]"
+                >
+                  <option value="">Select Occasion</option>
+                  {settings.filterGroups.find(g => g.id === 'occasion')!.options.map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              ) : (
+                <input required type="text" name="occasion" value={formData.occasion || ''} onChange={handleInputChange} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" />
+              )}
             </div>
             <div>
               <label className="block text-[13px] font-medium text-text-light mb-1">Price (₹)</label>

@@ -9,6 +9,7 @@ import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { ProductProvider } from './context/ProductContext';
 import { CollectionProvider } from './context/CollectionContext';
+import { FilterSettingsProvider } from './context/FilterSettingsContext';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { CartDrawer } from './components/cart/CartDrawer';
@@ -31,6 +32,7 @@ import { AdminReviews } from './pages/admin/AdminReviews';
 import { AdminShipments } from './pages/admin/AdminShipments';
 import { AdminFAQs } from './pages/admin/AdminFAQs';
 import { AdminSettings } from './pages/admin/AdminSettings';
+import { AdminFilters } from './pages/admin/AdminFilters';
 import { AdminNewsletter } from './pages/admin/AdminNewsletter';
 import { Checkout } from './pages/Checkout';
 
@@ -45,6 +47,7 @@ const ScrollToTop = () => {
 
 export default function App() {
   return (
+    <FilterSettingsProvider>
     <AuthProvider>
       <CollectionProvider>
         <ProductProvider>
@@ -63,6 +66,7 @@ export default function App() {
                 <Route path="shipments" element={<AdminShipments />} />
                 <Route path="faqs" element={<AdminFAQs />} />
                 <Route path="settings" element={<AdminSettings />} />
+                <Route path="filters" element={<AdminFilters />} />
                 <Route path="newsletter" element={<AdminNewsletter />} />
               </Route>
 
@@ -96,5 +100,6 @@ export default function App() {
         </ProductProvider>
       </CollectionProvider>
     </AuthProvider>
+    </FilterSettingsProvider>
   );
 }
