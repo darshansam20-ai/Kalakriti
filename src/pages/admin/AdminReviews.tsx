@@ -10,6 +10,7 @@ interface Review {
   userId: string;
   rating: number;
   comment: string;
+  images?: string[];
   status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
 }
@@ -108,6 +109,13 @@ export const AdminReviews: React.FC = () => {
                     <MessageSquare size={14} className="mr-2 mt-0.5 flex-shrink-0 opacity-50" />
                     {review.comment || <span className="italic opacity-50">No comment</span>}
                   </p>
+                  {review.images && review.images.length > 0 && (
+                    <div className="flex gap-2 mt-2">
+                      {review.images.map((img, idx) => (
+                        <img key={idx} src={img} alt="review attachment" className="w-12 h-12 object-cover rounded shadow-sm border border-black/5" referrerPolicy="no-referrer" />
+                      ))}
+                    </div>
+                  )}
                 </td>
                 <td className="p-4 align-top">
                   <select 

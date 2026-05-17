@@ -80,10 +80,10 @@ export const Navbar: React.FC = () => {
           {/* Mobile menu button */}
           <div className="flex items-center md:hidden">
             <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => setIsMobileMenuOpen(true)}
               className="text-ink hover:text-maroon p-2"
             >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              <Menu size={24} />
             </button>
           </div>
 
@@ -204,47 +204,77 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-surface border-b border-gold/20 overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-[60] md:hidden backdrop-blur-sm"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Menu Sidebar */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+            className="fixed top-0 left-0 h-[100dvh] w-[80%] max-w-[320px] bg-surface z-[70] shadow-2xl flex flex-col md:hidden"
           >
-            <div className="px-4 pt-2 pb-6 space-y-1">
-              <Link to="/collections" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 text-[13px] uppercase tracking-[1px] font-medium text-ink border-b border-black/5">Collection</Link>
-              <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 text-[13px] uppercase tracking-[1px] font-medium text-ink border-b border-black/5">Bestsellers</Link>
-              <Link to="/shop?category=bridal" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 text-[13px] uppercase tracking-[1px] font-medium text-ink border-b border-black/5">Custom Made</Link>
-              <Link to="/shop?category=daily" onClick={() => setIsMobileMenuOpen(false)} className="block px-3 py-3 text-[13px] uppercase tracking-[1px] font-medium text-ink border-b border-black/5">Our Story</Link>
-              <div className="flex space-x-6 px-3 py-4">
+            <div className="flex justify-between items-center p-5 border-b border-gold/20">
+              <span className="font-serif text-[20px] font-bold text-maroon tracking-[2px] uppercase">
+                {storeName}
+              </span>
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 -mr-2 text-ink hover:text-maroon transition-colors"
+                aria-label="Close menu"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto py-8 px-6">
+              <nav className="flex flex-col space-y-6">
+                <Link to="/collections" onClick={() => setIsMobileMenuOpen(false)} className="text-[14px] uppercase tracking-[1.5px] font-medium text-ink hover:text-maroon transition-colors">Collection</Link>
+                <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-[14px] uppercase tracking-[1.5px] font-medium text-ink hover:text-maroon transition-colors">Bestsellers</Link>
+                <Link to="/shop?category=bridal" onClick={() => setIsMobileMenuOpen(false)} className="text-[14px] uppercase tracking-[1.5px] font-medium text-ink hover:text-maroon transition-colors">Custom Made</Link>
+                <Link to="/shop?category=daily" onClick={() => setIsMobileMenuOpen(false)} className="text-[14px] uppercase tracking-[1.5px] font-medium text-ink hover:text-maroon transition-colors">Our Story</Link>
+              </nav>
+
+              <div className="mt-12 pt-8 border-t border-gold/20 space-y-6">
                 <button 
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     setIsSearchModalOpen(true);
                   }}
-                  className="flex items-center text-ink text-[13px] uppercase tracking-[1px] font-medium"
+                  className="flex items-center text-ink text-[14px] uppercase tracking-[1.5px] font-medium hover:text-maroon w-full transition-colors"
                 >
-                  <Search size={20} className="mr-2" /> Search
+                  <Search size={22} className="mr-4" /> Search
                 </button>
                 <button 
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     handleWishlistClick();
                   }}
-                  className="flex items-center text-ink text-[13px] uppercase tracking-[1px] font-medium"
+                  className="flex items-center text-ink text-[14px] uppercase tracking-[1.5px] font-medium hover:text-maroon w-full transition-colors"
                 >
-                  <Heart size={20} className="mr-2" /> Wishlist
+                  <Heart size={22} className="mr-4" /> Wishlist
                 </button>
                 <button 
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     handleUserClick();
                   }}
-                  className="flex items-center text-ink text-[13px] uppercase tracking-[1px] font-medium"
+                  className="flex items-center text-ink text-[14px] uppercase tracking-[1.5px] font-medium hover:text-maroon w-full transition-colors"
                 >
-                  <User size={20} className="mr-2" /> {user ? 'Account' : 'Login'}
+                  <User size={22} className="mr-4" /> {user ? 'Account' : 'Login'}
                 </button>
               </div>
             </div>

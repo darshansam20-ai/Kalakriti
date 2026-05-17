@@ -320,6 +320,18 @@ export const AdminProducts: React.FC = () => {
             </div>
 
             <div className="md:col-span-2">
+              <label className="block text-[13px] font-medium text-text-light mb-1">Sizes (Comma separated)</label>
+              <input 
+                type="text" 
+                value={(formData.sizes || []).join(', ')} 
+                onChange={(e) => setFormData({...formData, sizes: e.target.value.split(',').map(s => s.trimStart())})} 
+                onBlur={(e) => setFormData({...formData, sizes: e.target.value.split(',').map(s => s.trim()).filter(Boolean)})}
+                className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" 
+                placeholder="e.g. 2.2, 2.4, 2.6, 2.8"
+              />
+            </div>
+
+            <div className="md:col-span-2">
               <label className="block text-[13px] font-medium text-text-light mb-1">Care Instructions</label>
               <textarea name="careInstructions" value={formData.careInstructions || ''} onChange={handleInputChange} rows={2} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]"></textarea>
             </div>

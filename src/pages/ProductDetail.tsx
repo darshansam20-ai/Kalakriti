@@ -6,6 +6,8 @@ import { useCart } from '../context/CartContext';
 import { Star, ChevronDown, ChevronUp, ShoppingBag, Truck, ShieldCheck, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
+import { ProductReviews } from '../components/product/ProductReviews';
+
 export const ProductDetail: React.FC = () => {
   const { products } = useProducts();
   const { id } = useParams<{ id: string }>();
@@ -29,19 +31,19 @@ export const ProductDetail: React.FC = () => {
   }
 
   const handleAddToCart = () => {
-    if (!selectedSize) {
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       alert('Please select a size');
       return;
     }
-    addToCart(product, selectedSize);
+    addToCart(product, selectedSize || '');
   };
 
   const handleBuyNow = () => {
-    if (!selectedSize) {
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       alert('Please select a size');
       return;
     }
-    addToCart(product, selectedSize);
+    addToCart(product, selectedSize || '');
     openCart();
     // In a real app, this might redirect straight to checkout
   };
@@ -138,27 +140,29 @@ export const ProductDetail: React.FC = () => {
             </p>
 
             {/* Size Selector */}
-            <div className="mb-8">
-              <div className="flex justify-between items-center mb-3">
-                <span className="font-medium text-ink text-[14px]">Select Size</span>
-                <button className="text-[13px] text-text-light underline underline-offset-4 hover:text-ink">Size Guide</button>
+            {product.sizes && product.sizes.length > 0 && (
+              <div className="mb-8">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="font-medium text-ink text-[14px]">Select Size</span>
+                  <button className="text-[13px] text-text-light underline underline-offset-4 hover:text-ink">Size Guide</button>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {product.sizes.map(size => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`w-12 h-12 rounded-full border flex items-center justify-center text-[14px] font-medium transition-all ${
+                        selectedSize === size 
+                          ? 'border-maroon bg-maroon text-white shadow-md' 
+                          : 'border-black/10 text-ink hover:border-maroon'
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="flex flex-wrap gap-3">
-                {product.sizes.map(size => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`w-12 h-12 rounded-full border flex items-center justify-center text-[14px] font-medium transition-all ${
-                      selectedSize === size 
-                        ? 'border-maroon bg-maroon text-white shadow-md' 
-                        : 'border-black/10 text-ink hover:border-maroon'
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
+            )}
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
@@ -286,6 +290,8 @@ export const ProductDetail: React.FC = () => {
 
           </div>
         </div>
+
+        <ProductReviews productId={product.id} />
       </div>
     </div>
   );

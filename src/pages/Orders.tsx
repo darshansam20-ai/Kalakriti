@@ -175,10 +175,10 @@ export const Orders: React.FC = () => {
                   <div className="space-y-4">
                     {order.items?.map((item, i) => (
                       <div key={i} className="flex items-center gap-4">
-                        <img src={item.image} alt={item.title} className="w-16 h-16 object-cover rounded-[8px] bg-[#f9f9f9] mix-blend-multiply border border-black/5" />
+                        <img src={item.images?.[0] || item.image || ''} alt={item.title} className="w-16 h-16 object-cover rounded-[8px] bg-[#f9f9f9] mix-blend-multiply border border-black/5" referrerPolicy="no-referrer" />
                         <div className="flex-grow">
                           <h4 className="text-[14px] font-medium text-ink line-clamp-1">{item.title}</h4>
-                          <p className="text-[13px] text-text-light">Size: {item.size} | Qty: {item.quantity}</p>
+                          <p className="text-[13px] text-text-light">Size: {item.selectedSize || item.size || 'N/A'} | Qty: {item.quantity}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-[14px] font-bold text-ink">₹{((item.price || 0) * (item.quantity || 1)).toLocaleString('en-IN')}</p>

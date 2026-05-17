@@ -103,9 +103,13 @@ export const AdminOrders: React.FC = () => {
                   <td className="p-4 text-[14px] text-text-light">
                     {order.createdAt?.toDate ? order.createdAt.toDate().toLocaleDateString() : 'N/A'}
                   </td>
-                  <td className="p-4 text-[13px] text-text-light">
+                  <td className="p-4 text-[13px] text-text-light min-w-[200px]">
                     {order.shippingAddress ? (
                       <div className="flex flex-col gap-1">
+                        {order.shippingAddress.fullName && <span className="font-medium text-ink">{order.shippingAddress.fullName}</span>}
+                        {order.shippingAddress.phone && <span>Phone: {order.shippingAddress.phone}</span>}
+                        {order.shippingAddress.houseNo && <span>{order.shippingAddress.houseNo}, {order.shippingAddress.area}</span>}
+                        {order.shippingAddress.city && <span>{order.shippingAddress.city}, {order.shippingAddress.state} - {order.shippingAddress.pincode}</span>}
                         <span title={order.shippingAddress.description}>{order.shippingAddress.description}</span>
                         {order.shippingAddress.lat && order.shippingAddress.lng ? (
                           <a 
@@ -170,10 +174,17 @@ export const AdminOrders: React.FC = () => {
                       <div className="flex flex-wrap gap-4">
                         {order.items.map((item: any, i: number) => (
                           <div key={i} className="flex items-center gap-3 bg-accent-soft p-2 rounded-[8px] border border-black/5">
-                            <img src={item.image} alt={item.title} className="w-12 h-12 object-cover rounded-[4px] mix-blend-multiply bg-[#f9f9f9]" />
+                            <img src={item.images?.[0] || item.image || ''} alt={item.title} className="w-12 h-12 object-cover rounded-[4px] mix-blend-multiply bg-[#f9f9f9]" referrerPolicy="no-referrer" />
                             <div>
                               <p className="text-[13px] font-medium text-ink whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" title={item.title}>{item.title}</p>
-                              <p className="text-[12px] text-text-light">Size: {item.size} | Qty: {item.quantity}</p>
+                              <p className="text-[12px] text-text-light">
+                                Size: {item.selectedSize || item.size || 'N/A'} | Qty: {item.quantity}
+                              </p>
+                              <p className="text-[11px] text-text-light flex gap-2">
+                                {item.color && <span>Color: {item.color}</span>}
+                                {item.material && <span>Mat: {item.material}</span>}
+                                {item.occasion && <span>Occ: {item.occasion}</span>}
+                              </p>
                               <p className="text-[13px] font-bold text-maroon">₹{((item.price || 0) * (item.quantity || 1)).toLocaleString('en-IN')}</p>
                             </div>
                           </div>
