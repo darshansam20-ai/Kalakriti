@@ -139,7 +139,12 @@ export const AdminProducts: React.FC = () => {
 
   const startEdit = (product: Product) => {
     setIsEditing(product.id);
-    setFormData(product);
+    const productToEdit = { ...product };
+    // Ensure categories array exists for backwards compatibility
+    if (!productToEdit.categories) {
+      productToEdit.categories = (product as any).category ? [(product as any).category] : [];
+    }
+    setFormData(productToEdit);
     setIsAdding(true);
   };
 
@@ -249,12 +254,12 @@ export const AdminProducts: React.FC = () => {
                     <input 
                       type="checkbox" 
                       name="categories"
-                      checked={formData.categories.includes(c.name)} 
+                      checked={formData.categories?.includes(c.name) || false} 
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setFormData(prev => ({ ...prev, categories: [...prev.categories, c.name] }));
+                          setFormData(prev => ({ ...prev, categories: [...(prev.categories || []), c.name] }));
                         } else {
-                          setFormData(prev => ({ ...prev, categories: prev.categories.filter(cat => cat !== c.name) }));
+                          setFormData(prev => ({ ...prev, categories: (prev.categories || []).filter(cat => cat !== c.name) }));
                         }
                       }} 
                       className="accent-maroon" 
