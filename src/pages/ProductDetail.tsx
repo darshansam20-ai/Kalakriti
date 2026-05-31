@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
-import { Star, ChevronDown, ChevronUp, ShoppingBag, Truck, ShieldCheck, Heart } from 'lucide-react';
+import { Star, ChevronDown, ChevronUp, ShoppingBag, Truck, ShieldCheck, Heart, X, Maximize2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 import { ProductReviews } from '../components/product/ProductReviews';
@@ -20,6 +20,7 @@ export const ProductDetail: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string>(product?.sizes[0] || '');
   const [openAccordion, setOpenAccordion] = useState<string | null>('details');
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   if (!product) {
     return (
@@ -69,13 +70,19 @@ export const ProductDetail: React.FC = () => {
                   onClick={() => setSelectedImage(idx)}
                   className={`relative aspect-square rounded-[8px] overflow-hidden border flex-shrink-0 w-20 md:w-full bg-[#f9f9f9] ${selectedImage === idx ? 'border-maroon' : 'border-black/5 opacity-70 hover:opacity-100'}`}
                 >
-                  <img src={img} alt={`${product.title} thumbnail ${idx + 1}`} className="w-full h-full object-cover mix-blend-multiply" referrerPolicy="no-referrer" />
+                  <img src={img} alt={`${product.title} thumbnail ${idx + 1}`} className="w-full h-full object-contain mix-blend-multiply p-1" referrerPolicy="no-referrer" />
                 </button>
               ))}
             </div>
             
             {/* Main Image */}
-            <div className="flex-1 relative aspect-[4/5] md:aspect-square rounded-[12px] overflow-hidden bg-[#f9f9f9] border border-black/5">
+            <div 
+              className="flex-1 relative aspect-[4/5] md:aspect-square rounded-[12px] overflow-hidden bg-[#f9f9f9] border border-black/5 cursor-zoom-in group"
+              onClick={() => setIsImageModalOpen(true)}
+            >
+              <div className="absolute top-4 right-4 z-10 bg-white/80 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                <Maximize2 size={20} className="text-ink" />
+              </div>
               <motion.img 
                 key={selectedImage}
                 initial={{ opacity: 0 }}
@@ -83,7 +90,7 @@ export const ProductDetail: React.FC = () => {
                 transition={{ duration: 0.3 }}
                 src={product.images[selectedImage]} 
                 alt={product.title} 
-                className="w-full h-full object-cover mix-blend-multiply"
+                className="w-full h-full object-contain mix-blend-multiply p-4"
                 referrerPolicy="no-referrer"
               />
               {!product.inStock && (
@@ -293,6 +300,40 @@ export const ProductDetail: React.FC = () => {
 
         <ProductReviews productId={product.id} />
       </div>
+
+      {/* Image Modal for Full View */}
+      <AnimatePresence>
+        {isImageModalOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 bg-black/90 backdrop-blur-sm"
+            onClick={() => setIsImageModalOpen(false)}
+          >
+            <button 
+              className="absolute top-6 right-6 text-white hover:text-white/70 transition-colors p-2 bg-black/50 rounded-full"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsImageModalOpen(false);
+              }}
+            >
+              <X size={32} strokeWidth={1.5} />
+            </button>
+            <motion.img
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              src={product.images[selectedImage]}
+              alt={product.title}
+              className="max-w-full max-h-full object-contain shadow-2xl rounded-[8px]"
+              referrerPolicy="no-referrer"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

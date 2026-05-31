@@ -22,7 +22,7 @@ export const Collections: React.FC = () => {
             Our Collections
           </h1>
           <p className="text-text-light max-w-2xl mx-auto text-[15px]">
-            Explore our curated collections of handcrafted bangles, designed for every occasion and style.
+            Explore our curated collections of handcrafted jewelry, designed for every occasion and style.
           </p>
         </div>
 

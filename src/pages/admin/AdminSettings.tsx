@@ -15,8 +15,10 @@ export const AdminSettings: React.FC = () => {
     shippingPolicy: 'Our standard shipping policy...',
     returnsPolicy: 'Our standard returns and exchanges policy...',
     heroTitle: 'Handcrafted Elegance For Every Occasion',
-    heroSubtitle: 'Authentic Indian artistry woven into timeless silk and gold bangles.',
-    footerAbout: 'Handcrafted elegance for every occasion. We bring you the finest collection of traditional and modern Indian bangles.'
+    heroSubtitle: 'Authentic Indian artistry woven into timeless handcrafted jewelry.',
+    footerAbout: 'Handcrafted elegance for every occasion. We bring you the finest collection of traditional and modern Indian jewelry.',
+    flatShippingRate: 80,
+    freeShippingThreshold: 1500
   });
 
   useEffect(() => {
@@ -173,6 +175,31 @@ export const AdminSettings: React.FC = () => {
 
         <div className="space-y-6">
           <h2 className="font-serif text-[20px] font-bold text-ink">Store Legal Pages</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-[14px] font-bold text-ink mb-1">Standard Flat Shipping Rate (₹)</label>
+              <p className="text-[12px] text-text-light mb-2">Flat rate applied to orders below free shipping threshold.</p>
+              <input
+                type="number"
+                name="flatShippingRate"
+                value={formData.flatShippingRate}
+                onChange={handleChange}
+                className="w-full border border-black/10 rounded-[8px] px-4 py-2 text-[14px]"
+              />
+            </div>
+            <div>
+              <label className="block text-[14px] font-bold text-ink mb-1">Free Shipping Threshold (₹)</label>
+              <p className="text-[12px] text-text-light mb-2">Orders above this value will have zero shipping charges.</p>
+              <input
+                type="number"
+                name="freeShippingThreshold"
+                value={formData.freeShippingThreshold}
+                onChange={handleChange}
+                className="w-full border border-black/10 rounded-[8px] px-4 py-2 text-[14px]"
+              />
+            </div>
+          </div>
           
           <div>
             <label className="block text-[14px] font-bold text-ink mb-1">Contact Us Content</label>

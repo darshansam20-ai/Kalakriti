@@ -8,7 +8,7 @@ export const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const [storeData, setStoreData] = useState({
-    aboutText: 'Handcrafted elegance for every occasion. We bring you the finest collection of traditional and modern Indian bangles.',
+    aboutText: 'Handcrafted elegance for every occasion. We bring you the finest collection of traditional and modern Indian jewelry.',
     storeName: 'Kalakriti',
     storeEmail: 'kalakriticreations80@gmail.com',
     instagramUrl: 'https://instagram.com/creations.kalakriti',
@@ -78,11 +78,12 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="font-serif text-[18px] font-semibold mb-4 text-ink">Shop</h3>
             <ul className="space-y-3 text-[13px] uppercase tracking-wide text-text-light">
-              <li><Link to="/shop" className="hover:text-maroon transition-colors">All Bangles</Link></li>
-              <li><Link to="/shop?category=bridal" className="hover:text-maroon transition-colors">Bridal Sets</Link></li>
-              <li><Link to="/shop?category=silk" className="hover:text-maroon transition-colors">Silk Thread</Link></li>
-              <li><Link to="/shop?category=kundan" className="hover:text-maroon transition-colors">Kundan & Stone</Link></li>
-              <li><Link to="/shop?category=daily" className="hover:text-maroon transition-colors">Daily Wear</Link></li>
+              <li><Link to="/shop" className="hover:text-maroon transition-colors">All Jewelry</Link></li>
+              <li><Link to="/shop?category=custom-made" className="hover:text-maroon transition-colors">Custom Made</Link></li>
+              <li><Link to="/shop?category=necklaces" className="hover:text-maroon transition-colors">Necklaces & Sets</Link></li>
+              <li><Link to="/shop?category=earrings" className="hover:text-maroon transition-colors">Earrings</Link></li>
+              <li><Link to="/shop?category=bridal-sets" className="hover:text-maroon transition-colors">Bridal Sets</Link></li>
+              <li><Link to="/shop?category=silk-thread" className="hover:text-maroon transition-colors">Silk Thread</Link></li>
             </ul>
           </div>
 

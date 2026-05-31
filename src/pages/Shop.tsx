@@ -52,7 +52,7 @@ export const Shop: React.FC = () => {
       const q = searchQuery.toLowerCase();
       result = result.filter(p => 
         p.title.toLowerCase().includes(q) || 
-        p.category.toLowerCase().includes(q) ||
+        p.categories?.some(c => c.toLowerCase().includes(q)) ||
         p.material.toLowerCase().includes(q) ||
         p.description.toLowerCase().includes(q)
       );
@@ -61,7 +61,7 @@ export const Shop: React.FC = () => {
     if (activeCategory) {
       const categoryName = categories.find(c => c.id === activeCategory)?.name;
       if (categoryName) {
-        result = result.filter(p => p.category === categoryName);
+        result = result.filter(p => p.categories?.includes(categoryName));
       }
     }
     
@@ -129,7 +129,7 @@ export const Shop: React.FC = () => {
           <p className="text-text-light max-w-2xl text-[15px]">
             {searchQuery 
               ? `Found ${filteredProducts.length} ${filteredProducts.length === 1 ? 'result' : 'results'}`
-              : 'Discover our handcrafted collection of bangles, designed to add a touch of elegance to every moment.'}
+              : 'Discover our handcrafted collection of jewelry, designed to add a touch of elegance to every moment.'}
           </p>
         </div>
 
@@ -172,7 +172,7 @@ export const Shop: React.FC = () => {
                       onClick={() => updateFilter('category', null)}
                       className={`text-[13px] uppercase tracking-wide ${!activeCategory ? 'text-maroon font-bold' : 'text-text-light hover:text-ink'}`}
                     >
-                      All Bangles
+                      All Jewelry
                     </button>
                   </li>
                   {categories.map(c => (

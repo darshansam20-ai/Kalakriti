@@ -24,7 +24,7 @@ export const AdminProducts: React.FC = () => {
     description: '',
     price: 0,
     mrp: 0,
-    category: 'Bridal Sets',
+    categories: ['Bridal Sets'],
     material: '',
     color: 'Gold',
     occasion: 'Wedding',
@@ -147,7 +147,7 @@ export const AdminProducts: React.FC = () => {
     setIsAdding(false);
     setIsEditing(null);
     setFormData({
-      title: '', description: '', price: 0, mrp: 0, category: 'Bridal Sets',
+      title: '', description: '', price: 0, mrp: 0, categories: ['Bridal Sets'],
       material: '', color: 'Gold', occasion: 'Wedding', rating: 0, reviews: 0,
       inStock: true, images: [''], sizes: [], isBestseller: false, isNewArrival: true,
       shippingReturns: '', careInstructions: '',
@@ -242,13 +242,27 @@ export const AdminProducts: React.FC = () => {
               <input required type="text" name="title" value={formData.title} onChange={handleInputChange} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-text-light mb-1">Category</label>
-              <select required name="category" value={formData.category} onChange={handleInputChange as any} className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px] bg-white">
-                <option value="" disabled>Select a category</option>
+              <label className="block text-[13px] font-medium text-text-light mb-1">Collections</label>
+              <div className="flex flex-wrap gap-2">
                 {categories.map(c => (
-                  <option key={c.id} value={c.name}>{c.name}</option>
+                  <label key={c.id} className="flex items-center space-x-2 text-[13px] text-ink cursor-pointer border border-black/10 rounded-full px-3 py-1 hover:bg-black/5 transition-colors">
+                    <input 
+                      type="checkbox" 
+                      name="categories"
+                      checked={formData.categories.includes(c.name)} 
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFormData(prev => ({ ...prev, categories: [...prev.categories, c.name] }));
+                        } else {
+                          setFormData(prev => ({ ...prev, categories: prev.categories.filter(cat => cat !== c.name) }));
+                        }
+                      }} 
+                      className="accent-maroon" 
+                    />
+                    <span>{c.name}</span>
+                  </label>
                 ))}
-              </select>
+              </div>
             </div>
             
             <div className="md:col-span-2">
@@ -327,7 +341,7 @@ export const AdminProducts: React.FC = () => {
                 onChange={(e) => setFormData({...formData, sizes: e.target.value.split(',').map(s => s.trimStart())})} 
                 onBlur={(e) => setFormData({...formData, sizes: e.target.value.split(',').map(s => s.trim()).filter(Boolean)})}
                 className="w-full border border-black/10 rounded-[8px] px-3 py-2 text-[14px]" 
-                placeholder="e.g. 2.2, 2.4, 2.6, 2.8"
+                placeholder="e.g. 2.2, 2.4, Free Size, Adjustable"
               />
             </div>
 
@@ -467,7 +481,7 @@ export const AdminProducts: React.FC = () => {
                 </td>
                 <td className="p-4">
                   <p className="text-[14px] font-medium text-ink">{product.title}</p>
-                  <p className="text-[12px] text-text-light">{product.category}</p>
+                  <p className="text-[12px] text-text-light">{product.categories?.join(', ')}</p>
                 </td>
                 <td className="p-4 text-[14px] font-medium text-maroon">₹{product.price.toLocaleString('en-IN')}</td>
                 <td className="p-4">

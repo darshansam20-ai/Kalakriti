@@ -8,7 +8,7 @@ import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocom
 import { AddressForm, Address } from '../components/AddressForm';
 
 export const Checkout: React.FC = () => {
-  const { items, cartTotal, closeCart } = useCart();
+  const { items, cartTotal, closeCart, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   
@@ -22,6 +22,9 @@ export const Checkout: React.FC = () => {
   
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [processing, setProcessing] = useState(false);
+  
+  const [shippingRate, setShippingRate] = useState(80);
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState(1500);
 
   // Address search field (use-places-autocomplete)
   const {
@@ -41,6 +44,22 @@ export const Checkout: React.FC = () => {
       navigate('/shop');
     }
     
+    // Fetch shipping settings
+    const fetchSettings = async () => {
+      try {
+        const docRef = doc(db, 'settings', 'public');
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.flatShippingRate !== undefined) setShippingRate(Number(data.flatShippingRate));
+          if (data.freeShippingThreshold !== undefined) setFreeShippingThreshold(Number(data.freeShippingThreshold));
+        }
+      } catch (error) {
+        console.error("Error fetching settings:", error);
+      }
+    };
+    fetchSettings();
+
     // Fetch user addresses
     const fetchUserAddresses = async () => {
       if (!user) return;
@@ -67,7 +86,9 @@ export const Checkout: React.FC = () => {
     }
   }, []);
 
-  const finalTotal = Math.max(0, cartTotal - discount);
+  const subtotalAfterDiscount = Math.max(0, cartTotal - discount);
+  const appliedShipping = subtotalAfterDiscount >= freeShippingThreshold ? 0 : shippingRate;
+  const finalTotal = subtotalAfterDiscount + appliedShipping;
 
   const handleApplyPromo = async () => {
     setPromoError('');
@@ -134,6 +155,8 @@ export const Checkout: React.FC = () => {
         userName: user.displayName || 'Unknown User',
         userEmail: user.email || '',
         items,
+        subtotal: cartTotal,
+        shipping: appliedShipping,
         totalAmount: finalTotal,
         discountApplied: discount,
         shippingAddress: addresses[selectedAddressIndex],
@@ -144,6 +167,7 @@ export const Checkout: React.FC = () => {
       };
       await addDoc(collection(db, 'orders'), orderData);
     }
+    clearCart();
     setPaymentSuccess(true);
     setProcessing(false);
   };
@@ -358,6 +382,10 @@ export const Checkout: React.FC = () => {
                   <p>-₹{discount.toLocaleString('en-IN')}</p>
                 </div>
               )}
+              <div className="flex justify-between text-[14px] text-text-light">
+                <p>Shipping {subtotalAfterDiscount < freeShippingThreshold && <span className="text-[12px] opacity-70">(Free over ₹{freeShippingThreshold})</span>}</p>
+                <p>{appliedShipping === 0 ? <span className="text-green-600 font-medium">Free</span> : `₹${appliedShipping}`}</p>
+              </div>
               <div className="flex justify-between text-[18px] font-bold text-ink pt-3 border-t border-black/5">
                 <p>Total</p>
                 <p className="text-maroon">₹{finalTotal.toLocaleString('en-IN')}</p>

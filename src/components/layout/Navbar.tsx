@@ -98,8 +98,8 @@ export const Navbar: React.FC = () => {
           <nav className="hidden md:flex space-x-[32px]">
             <Link to="/collections" className="text-[13px] uppercase tracking-[1px] font-medium text-ink hover:text-maroon transition-colors">Collection</Link>
             <Link to="/shop" className="text-[13px] uppercase tracking-[1px] font-medium text-ink hover:text-maroon transition-colors">Bestsellers</Link>
-            <Link to="/shop?category=bridal" className="text-[13px] uppercase tracking-[1px] font-medium text-ink hover:text-maroon transition-colors">Custom Made</Link>
-            <Link to="/shop?category=daily" className="text-[13px] uppercase tracking-[1px] font-medium text-ink hover:text-maroon transition-colors">Our Story</Link>
+            <Link to="/shop?category=custom-made" className="text-[13px] uppercase tracking-[1px] font-medium text-ink hover:text-maroon transition-colors">Custom Made</Link>
+            <Link to="/shop?category=daily-wear" className="text-[13px] uppercase tracking-[1px] font-medium text-ink hover:text-maroon transition-colors">Our Story</Link>
           </nav>
 
           {/* Icons */}
@@ -244,8 +244,8 @@ export const Navbar: React.FC = () => {
               <nav className="flex flex-col space-y-6">
                 <Link to="/collections" onClick={() => setIsMobileMenuOpen(false)} className="text-[14px] uppercase tracking-[1.5px] font-medium text-ink hover:text-maroon transition-colors">Collection</Link>
                 <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-[14px] uppercase tracking-[1.5px] font-medium text-ink hover:text-maroon transition-colors">Bestsellers</Link>
-                <Link to="/shop?category=bridal" onClick={() => setIsMobileMenuOpen(false)} className="text-[14px] uppercase tracking-[1.5px] font-medium text-ink hover:text-maroon transition-colors">Custom Made</Link>
-                <Link to="/shop?category=daily" onClick={() => setIsMobileMenuOpen(false)} className="text-[14px] uppercase tracking-[1.5px] font-medium text-ink hover:text-maroon transition-colors">Our Story</Link>
+                <Link to="/shop?category=custom-made" onClick={() => setIsMobileMenuOpen(false)} className="text-[14px] uppercase tracking-[1.5px] font-medium text-ink hover:text-maroon transition-colors">Custom Made</Link>
+                <Link to="/shop?category=daily-wear" onClick={() => setIsMobileMenuOpen(false)} className="text-[14px] uppercase tracking-[1.5px] font-medium text-ink hover:text-maroon transition-colors">Our Story</Link>
               </nav>
 
               <div className="mt-12 pt-8 border-t border-gold/20 space-y-6">

@@ -27,7 +27,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
     ? [] 
     : products.filter(p => 
         p.title.toLowerCase().includes(query.toLowerCase()) || 
-        p.category.toLowerCase().includes(query.toLowerCase()) ||
+        p.categories?.some(c => c.toLowerCase().includes(query.toLowerCase())) ||
         p.material.toLowerCase().includes(query.toLowerCase())
       ).slice(0, 5); // Limit to 5 results
 
@@ -69,7 +69,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search for bangles, collections, materials..."
+                  placeholder="Search for jewelry, collections, materials..."
                   className="flex-grow bg-transparent text-[18px] md:text-[24px] text-ink focus:outline-none font-serif placeholder:text-black/20"
                 />
                 <button 
